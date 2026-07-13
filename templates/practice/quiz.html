@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Shortcut Trivia Quiz - ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<div style="max-width: 650px; margin: 0 auto;">
+    <!-- Active Quiz card -->
+    <div class="glass-panel" id="quiz-workspace" style="padding: 3rem; text-align: center; position: relative;">
+        <!-- Quiz HUD -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; color: var(--text-secondary); font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.8rem;">
+            <span id="question-progress">Question 1 of 5</span>
+            <span id="combo-display" style="color: var(--accent-pink); font-weight: 700;">Combo: x0</span>
+        </div>
+
+        <span class="badge" id="app-badge" style="border-color: var(--accent-purple); color: var(--accent-purple);">VS Code</span>
+        
+        <h2 style="font-size: 1.8rem; font-weight: 800; margin: 1.5rem 0;" id="question-text">
+            What is the shortcut key for: Command Palette?
+        </h2>
+
+        <!-- Choice Grid -->
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem;" id="options-container">
+            <!-- Dynamically populated in JavaScript -->
+        </div>
+    </div>
+
+    <!-- Quiz Complete Panel overlay -->
+    <div class="glass-panel" id="quiz-complete" style="display: none; padding: 3rem; text-align: center; max-width: 550px; margin: 0 auto;">
+        <div style="font-size: 4.5rem; color: var(--accent-warning); animation: bounce 0.6s ease;">
+            <ion-icon name="trophy"></ion-icon>
+        </div>
+        <h2 style="font-size: 2.2rem; margin-top: 1rem; margin-bottom: 0.5rem;" class="text-gradient-purple-blue">QUIZ COMPLETE!</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.05rem;" id="complete-msg">You answered 4 out of 5 questions correctly.</p>
+        
+        <div style="display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 2.5rem;">
+            <div class="glass-panel" style="padding: 0.8rem 2rem; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">Total XP Gained</div>
+                <div style="font-weight: 800; font-size: 1.5rem; color: var(--accent-cyan);" id="total-xp">+50 XP</div>
+            </div>
+            <div class="glass-panel" style="padding: 0.8rem 2rem; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">Success Accuracy</div>
+                <div style="font-weight: 800; font-size: 1.5rem; color: var(--accent-green);" id="final-accuracy">80%</div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{% url 'practice:home' %}" class="btn-primary">
+                Practice Arena <ion-icon name="arrow-forward"></ion-icon>
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn-secondary">
+                Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Parse questions passed by Django context
+    const questions = {{ questions_json|safe }};
+    
+    let currentIdx = 0;
+    let combo = 0;
+    let correctAnswersCount = 0;
+    let earnedXpAccumulator = 0;
+    let quizStartTime = Date.now();
+    let qStartTime = Date.now();
+
+    const quizWorkspace = document.getElementById('quiz-workspace');
+    const quizComplete = document.getElementById('quiz-complete');
+    
+    const progressText = document.getElementById('question-progress');
+    const comboText = document.getElementById('combo-display');
+    const appBadge = document.getElementById('app-badge');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+
+    function loadQuestion() {
+        if (currentIdx >= questions.length) {
+            finishQuiz();
+            return;
+        }
+
+        const q = questions[currentIdx];
+        progressText.textContent = `Question ${currentIdx + 1} of ${questions.length}`;
+        appBadge.textContent = q.application;
+        questionText.textContent = `What is the shortcut key for: "${q.description}"?`;
+        
+        optionsContainer.innerHTML = '';
+        q.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-secondary';
+            btn.style.width = '100%';
+            btn.style.justifyContent = 'center';
+            btn.style.padding = '1.1rem';
+            btn.style.fontSize = '1.1rem';
+            btn.style.fontFamily = 'monospace';
+            btn.textContent = opt;
+            
+            btn.addEventListener('click', () => selectOption(btn, opt, q.correct_option));
+            optionsContainer.appendChild(btn);
+        });
+
+        qStartTime = Date.now();
+    }
+
+    function selectOption(buttonEl, selectedOption, correctOption) {
+        // Disable other options to prevent multiple clicking
+        const buttons = optionsContainer.querySelectorAll('button');
+        buttons.forEach(b => b.setAttribute('disabled', 'true'));
+
+        const isCorrect = (selectedOption === correctOption);
+        const qEndTime = Date.now();
+        const duration = (qEndTime - qStartTime) / 1000.0;
+
+        if (isCorrect) {
+            buttonEl.style.background = 'var(--accent-green)';
+            buttonEl.style.color = '#fff';
+            buttonEl.style.borderColor = 'var(--accent-green)';
+            correctAnswersCount++;
+            combo++;
+            comboText.textContent = `Combo: x${combo}`;
+            
+            // Log this correct answer dynamically to award XP via the API
+            logIndividualAnswer(questions[currentIdx].id, 100.0, duration, true);
+        } else {
+            buttonEl.style.background = 'var(--accent-pink)';
+            buttonEl.style.color = '#fff';
+            buttonEl.style.borderColor = 'var(--accent-pink)';
+            combo = 0;
+            comboText.textContent = `Combo: x${combo}`;
+            
+            // Highlight the correct answer in green so the user learns
+            buttons.forEach(b => {
+                if (b.textContent === correctOption) {
+                    b.style.background = 'var(--accent-green)';
+                    b.style.color = '#fff';
+                    b.style.borderColor = 'var(--accent-green)';
+                }
+            });
+
+            logIndividualAnswer(questions[currentIdx].id, 0.0, duration, false);
+        }
+
+        // Wait 1.5 seconds before loading the next question
+        setTimeout(() => {
+            currentIdx++;
+            loadQuestion();
+        }, 1500);
+    }
+
+    function logIndividualAnswer(shortcutId, accuracy, responseTime, isCorrect) {
+        fetch("{% url 'practice:log_practice' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                shortcut_id: shortcutId,
+                accuracy: accuracy,
+                response_time: responseTime,
+                is_correct: isCorrect
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                earnedXpAccumulator += data.xp_earned;
+            }
+        });
+    }
+
+    function finishQuiz() {
+        quizWorkspace.style.display = 'none';
+        
+        const finalAccuracy = Math.round((correctAnswersCount / questions.length) * 100);
+        document.getElementById('complete-msg').textContent = `You answered ${correctAnswersCount} out of ${questions.length} questions correctly.`;
+        document.getElementById('total-xp').textContent = `+${earnedXpAccumulator} XP`;
+        document.getElementById('final-accuracy').textContent = `${finalAccuracy}%`;
+        
+        quizComplete.style.display = 'block';
+    }
+
+    // Initial load
+    loadQuestion();
+</script>
+{% endblock %}

@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+
+{% block title %}Daily Challenge - ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <span class="badge" style="border-color: var(--accent-pink); color: var(--accent-pink); font-size: 0.85rem; padding: 0.3rem 1rem;">
+            <ion-icon name="flame"></ion-icon> DOUBLE XP ACTIVE
+        </span>
+        <h1 style="font-size: 2.2rem; margin-top: 0.5rem; margin-bottom: 0.25rem;">Daily Challenge</h1>
+        <p style="color: var(--text-secondary);">Practice all three shortcuts in sequence to claim your double XP reward!</p>
+    </div>
+
+    <!-- Progress Indicator HUD -->
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem;" id="challenge-steps">
+        <div class="glass-panel active-step" id="step-0" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 12px; border-color: var(--accent-purple);">
+            <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--accent-purple); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">1</div>
+            <span style="font-size: 0.9rem; font-weight: 600;">First Shortcut</span>
+        </div>
+        <div class="glass-panel" id="step-1" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 12px; color: var(--text-muted);">
+            <div style="width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.05); color: inherit; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">2</div>
+            <span style="font-size: 0.9rem; font-weight: 600;">Second Shortcut</span>
+        </div>
+        <div class="glass-panel" id="step-2" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 12px; color: var(--text-muted);">
+            <div style="width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.05); color: inherit; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">3</div>
+            <span style="font-size: 0.9rem; font-weight: 600;">Final Challenge</span>
+        </div>
+    </div>
+
+    <!-- Active Workspace -->
+    <div class="glass-panel practice-stage-panel" style="position: relative; overflow: hidden; margin-bottom: 2rem;">
+        <span class="badge" id="shortcut-app" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">Application</span>
+        
+        <div class="practice-card-target">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem;" id="shortcut-desc">Description</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem;" id="shortcut-example">Example context</p>
+            
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                <ion-icon name="key-outline"></ion-icon> TARGET COMBINATION:
+            </div>
+            <div class="practice-shortcut-display" id="shortcut-keys">
+                <span class="key-cap" style="font-size: 1.8rem; padding: 0.5rem 1rem;">Keys</span>
+            </div>
+        </div>
+
+        <!-- Completion Overlay -->
+        <div id="challenge-complete" class="glass-panel" style="display: none; position: absolute; inset: 0; background: rgba(10, 11, 20, 0.95); flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
+            <div style="font-size: 4.5rem; color: var(--accent-pink); animation: bounce 0.6s ease;">
+                <ion-icon name="flame"></ion-icon>
+            </div>
+            <h2 style="font-size: 2.5rem; margin-top: 1rem; margin-bottom: 0.5rem;" class="text-gradient-pink-orange">CHALLENGE COMPLETE!</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem;" id="challenge-complete-msg">All 3 shortcuts completed successfully.</p>
+            
+            <div style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem;">
+                <div class="glass-panel" style="padding: 0.8rem 2rem; text-align: center;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Double XP Claimed</div>
+                    <div style="font-weight: 800; font-size: 1.5rem; color: var(--accent-cyan);" id="challenge-xp">+120 XP</div>
+                </div>
+            </div>
+
+            <a href="{% url 'dashboard' %}" class="btn-primary">
+                Return to Dashboard <ion-icon name="arrow-forward"></ion-icon>
+            </a>
+        </div>
+    </div>
+
+    <!-- Virtual Keyboard -->
+    <div class="keyboard-container" id="visual-keyboard">
+        <!-- Row 1 -->
+        <div class="keyboard-row">
+            <div class="vk-key" data-key="escape">Esc</div>
+            <div class="vk-key" data-key="f1">F1</div>
+            <div class="vk-key" data-key="f2">F2</div>
+            <div class="vk-key" data-key="f3">F3</div>
+            <div class="vk-key" data-key="f4">F4</div>
+            <div class="vk-key" data-key="f5">F5</div>
+            <div class="vk-key" data-key="f6">F6</div>
+            <div class="vk-key" data-key="f7">F7</div>
+            <div class="vk-key" data-key="f8">F8</div>
+            <div class="vk-key" data-key="f9">F9</div>
+            <div class="vk-key" data-key="f10">F10</div>
+            <div class="vk-key" data-key="f11">F11</div>
+            <div class="vk-key" data-key="f12">F12</div>
+        </div>
+        <!-- Row 2 -->
+        <div class="keyboard-row">
+            <div class="vk-key" data-key="`">`</div>
+            <div class="vk-key" data-key="1">1</div>
+            <div class="vk-key" data-key="2">2</div>
+            <div class="vk-key" data-key="3">3</div>
+            <div class="vk-key" data-key="4">4</div>
+            <div class="vk-key" data-key="5">5</div>
+            <div class="vk-key" data-key="6">6</div>
+            <div class="vk-key" data-key="7">7</div>
+            <div class="vk-key" data-key="8">8</div>
+            <div class="vk-key" data-key="9">9</div>
+            <div class="vk-key" data-key="0">0</div>
+            <div class="vk-key" data-key="-">-</div>
+            <div class="vk-key" data-key="=">=</div>
+            <div class="vk-key backspace" data-key="backspace">Backspace</div>
+        </div>
+        <!-- Row 3 -->
+        <div class="keyboard-row">
+            <div class="vk-key tab" data-key="tab">Tab</div>
+            <div class="vk-key" data-key="q">Q</div>
+            <div class="vk-key" data-key="w">W</div>
+            <div class="vk-key" data-key="e">E</div>
+            <div class="vk-key" data-key="r">R</div>
+            <div class="vk-key" data-key="t">T</div>
+            <div class="vk-key" data-key="y">Y</div>
+            <div class="vk-key" data-key="u">U</div>
+            <div class="vk-key" data-key="i">I</div>
+            <div class="vk-key" data-key="o">O</div>
+            <div class="vk-key" data-key="p">P</div>
+            <div class="vk-key" data-key="[">[</div>
+            <div class="vk-key" data-key="]">]</div>
+            <div class="vk-key" data-key="\" style="min-width: 44px;">\</div>
+        </div>
+        <!-- Row 4 -->
+        <div class="keyboard-row">
+            <div class="vk-key caps" data-key="capslock">Caps</div>
+            <div class="vk-key" data-key="a">A</div>
+            <div class="vk-key" data-key="s">S</div>
+            <div class="vk-key" data-key="d">D</div>
+            <div class="vk-key" data-key="f">F</div>
+            <div class="vk-key" data-key="g">G</div>
+            <div class="vk-key" data-key="h">H</div>
+            <div class="vk-key" data-key="j">J</div>
+            <div class="vk-key" data-key="k">K</div>
+            <div class="vk-key" data-key="l">L</div>
+            <div class="vk-key" data-key=";">;</div>
+            <div class="vk-key" data-key="'">'</div>
+            <div class="vk-key enter" data-key="enter">Enter</div>
+        </div>
+        <!-- Row 5 -->
+        <div class="keyboard-row">
+            <div class="vk-key shift-l" data-key="shift">Shift</div>
+            <div class="vk-key" data-key="z">Z</div>
+            <div class="vk-key" data-key="x">X</div>
+            <div class="vk-key" data-key="c">C</div>
+            <div class="vk-key" data-key="v">V</div>
+            <div class="vk-key" data-key="b">B</div>
+            <div class="vk-key" data-key="n">N</div>
+            <div class="vk-key" data-key="m">M</div>
+            <div class="vk-key" data-key=",">,</div>
+            <div class="vk-key" data-key=".">.</div>
+            <div class="vk-key" data-key="/">/</div>
+            <div class="vk-key shift-r" data-key="shift">Shift</div>
+        </div>
+        <!-- Row 6 -->
+        <div class="keyboard-row">
+            <div class="vk-key ctrl" data-key="control">Ctrl</div>
+            <div class="vk-key meta" data-key="meta">{% if os_pref == 'mac' %}Cmd{% else %}Win{% endif %}</div>
+            <div class="vk-key alt" data-key="alt">Alt</div>
+            <div class="vk-key space" data-key=" ">Space</div>
+            <div class="vk-key alt" data-key="alt">Alt</div>
+            <div class="vk-key meta" data-key="meta">{% if os_pref == 'mac' %}Cmd{% else %}Win{% endif %}</div>
+            <div class="vk-key ctrl" data-key="control">Ctrl</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Prepare challenge shortcuts array
+    const dailyShortcuts = [
+        {% for s in shortcuts %}
+            {
+                id: "{{ s.id }}",
+                app: "{{ s.application.name }}",
+                desc: "{{ s.description }}",
+                example: "{{ s.example }}",
+                keys: "{% if os_pref == 'mac' %}{{ s.keys_mac }}{% else %}{{ s.keys_windows }}{% endif %}"
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    let currentStep = 0;
+    let targetKeys = [];
+    const activeKeys = new Set();
+    
+    let stepStartTime = Date.now();
+    let wrongAttempts = 0;
+    let totalXpEarned = 0;
+    let finished = false;
+
+    function parseTargetKeys(rawKeys) {
+        return rawKeys.toLowerCase().split('+').map(k => {
+            let key = k.trim();
+            if (key === 'ctrl') return 'control';
+            if (key === 'cmd' || key === 'win') return 'meta';
+            return key;
+        });
+    }
+
+    function getKeyElements(keyName) {
+        let key = keyName.toLowerCase();
+        if (key === 'control') key = 'control';
+        if (key === 'cmd' || key === 'win') key = 'meta';
+        return document.querySelectorAll(`.vk-key[data-key="${key}"]`);
+    }
+
+    function loadChallengeStep() {
+        if (currentStep >= dailyShortcuts.length) {
+            completeChallenge();
+            return;
+        }
+
+        // Update step indicators
+        for (let i = 0; i < dailyShortcuts.length; i++) {
+            const stepEl = document.getElementById(`step-${i}`);
+            if (i < currentStep) {
+                stepEl.style.color = 'var(--accent-green)';
+                stepEl.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                stepEl.querySelector('div').style.background = 'var(--accent-green)';
+                stepEl.querySelector('div').innerHTML = '<ion-icon name="checkmark"></ion-icon>';
+            } else if (i === currentStep) {
+                stepEl.style.color = 'var(--text-primary)';
+                stepEl.style.borderColor = 'var(--accent-purple)';
+                stepEl.querySelector('div').style.background = 'var(--accent-purple)';
+                stepEl.querySelector('div').textContent = `${i + 1}`;
+            } else {
+                stepEl.style.color = 'var(--text-muted)';
+                stepEl.style.borderColor = 'var(--border-glass)';
+                stepEl.querySelector('div').style.background = 'rgba(255,255,255,0.05)';
+                stepEl.querySelector('div').textContent = `${i + 1}`;
+            }
+        }
+
+        // Render target values
+        const currentShortcut = dailyShortcuts[currentStep];
+        document.getElementById('shortcut-app').textContent = currentShortcut.app;
+        document.getElementById('shortcut-desc').textContent = currentShortcut.desc;
+        document.getElementById('shortcut-example').textContent = `Example: "${currentShortcut.example || 'No context'}"`;
+        document.getElementById('shortcut-keys').innerHTML = `<span class="key-cap" style="font-size: 1.8rem; padding: 0.5rem 1rem;">${currentShortcut.keys}</span>`;
+        
+        targetKeys = parseTargetKeys(currentShortcut.keys);
+        activeKeys.clear();
+        
+        // Remove correct indicator classes from keyboard keys
+        document.querySelectorAll('.vk-key').forEach(el => {
+            el.classList.remove('correct', 'active');
+        });
+
+        stepStartTime = Date.now();
+        wrongAttempts = 0;
+    }
+
+    // Capture standard browser events
+    window.addEventListener('keydown', (e) => {
+        if (finished || currentStep >= dailyShortcuts.length) return;
+        
+        const key = e.key.toLowerCase();
+        
+        if (e.ctrlKey || e.altKey || e.metaKey || key === 'tab' || key === 'backspace') {
+            e.preventDefault();
+        }
+
+        activeKeys.add(key);
+        
+        if (e.ctrlKey) activeKeys.add('control');
+        if (e.shiftKey) activeKeys.add('shift');
+        if (e.altKey) activeKeys.add('alt');
+        if (e.metaKey) activeKeys.add('meta');
+
+        activeKeys.forEach(k => {
+            const elements = getKeyElements(k);
+            elements.forEach(el => el.classList.add('active'));
+        });
+
+        checkCombination();
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (finished || currentStep >= dailyShortcuts.length) return;
+        
+        const key = e.key.toLowerCase();
+        activeKeys.delete(key);
+        
+        if (!e.ctrlKey) activeKeys.delete('control');
+        if (!e.shiftKey) activeKeys.delete('shift');
+        if (!e.altKey) activeKeys.delete('alt');
+        if (!e.metaKey) activeKeys.delete('meta');
+
+        const elements = getKeyElements(key);
+        elements.forEach(el => el.classList.remove('active'));
+    });
+
+    function checkCombination() {
+        let match = true;
+        for (let k of targetKeys) {
+            if (!activeKeys.has(k)) {
+                match = false;
+                break;
+            }
+        }
+
+        if (match) {
+            triggerStepSuccess();
+        } else {
+            let isWrong = false;
+            activeKeys.forEach(ak => {
+                if (!targetKeys.includes(ak)) {
+                    isWrong = true;
+                }
+            });
+            if (isWrong) {
+                wrongAttempts++;
+                activeKeys.forEach(ak => {
+                    if (!targetKeys.includes(ak)) {
+                        const el = getKeyElements(ak);
+                        el.forEach(e => {
+                            e.classList.add('incorrect');
+                            setTimeout(() => e.classList.remove('incorrect'), 400);
+                        });
+                    }
+                });
+            }
+        }
+    }
+
+    function triggerStepSuccess() {
+        // Prevent typing checks while transition plays
+        finished = true;
+        const endTime = Date.now();
+        const responseTime = (endTime - stepStartTime) / 1000.0;
+        const accuracy = Math.max(10, Math.round(100 / (1 + wrongAttempts)));
+
+        targetKeys.forEach(tk => {
+            const el = getKeyElements(tk);
+            el.forEach(e => e.classList.add('correct'));
+        });
+
+        // Post log to Django backend (is_challenge=true awards double XP)
+        fetch("{% url 'practice:log_practice' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                shortcut_id: dailyShortcuts[currentStep].id,
+                accuracy: accuracy,
+                response_time: responseTime,
+                is_correct: true,
+                is_challenge: true
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                totalXpEarned += data.xp_earned;
+                
+                setTimeout(() => {
+                    currentStep++;
+                    finished = false;
+                    loadChallengeStep();
+                }, 1200);
+            }
+        });
+    }
+
+    function completeChallenge() {
+        document.getElementById('challenge-xp').textContent = `+${totalXpEarned} XP`;
+        document.getElementById('challenge-complete').style.display = 'flex';
+    }
+
+    // Initialize
+    loadChallengeStep();
+</script>
+{% endblock %}

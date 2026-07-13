@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact - ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Get in <span class="text-gradient-purple-blue">Touch</span></h1>
+        <p style="color: var(--text-secondary);">Have feedback, suggestions, or application package request? Drop us a line.</p>
+    </div>
+    
+    <div class="glass-panel" style="padding: 2.5rem;">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" class="form-input" placeholder="e.g. John Doe" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" class="form-input" placeholder="e.g. Requesting Figma Advanced pack" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" class="form-input" placeholder="Write your message here..." style="resize: vertical;" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+                <ion-icon name="send-outline"></ion-icon> Send Message
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar profile panel -->
+    <div class="glass-panel sidebar-panel">
+        <div class="profile-card">
+            <div class="avatar-wrapper">
+                <div class="avatar-image">
+                    <!-- Dynamic rendering of local avatar assets -->
+                    <ion-icon name="person-circle-outline" style="color: var(--accent-cyan);"></ion-icon>
+                </div>
+            </div>
+            <h2>{{ user.username }}</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Ninja Level {{ level }}</p>
+            
+            <div style="margin-top: 1.5rem; text-align: left;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">
+                    <span>XP progress</span>
+                    <span style="color: var(--accent-purple);">{{ xp }} / {{ xp_to_next }}</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: {{ xp_percent }}%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <ion-icon name="ribbon-outline" style="color: var(--accent-warning);"></ion-icon> Recent Badges
+            </h3>
+            {% if recent_achievements %}
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for badge in recent_achievements %}
+                        <div style="display: flex; align-items: center; gap: 0.75rem; background: rgba(255, 255, 255, 0.03); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+                            <div style="font-size: 1.5rem; color: var(--accent-warning); display: flex;">
+                                <ion-icon name="{{ badge.badge_icon }}"></ion-icon>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.85rem; font-weight: 700;">{{ badge.name }}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">+{{ badge.xp_reward }} XP</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">No achievements unlocked yet. Keep practicing!</p>
+            {% endif %}
+        </div>
+        
+        <a href="{% url 'practice:home' %}" class="btn-primary" style="justify-content: center; width: 100%;">
+            <ion-icon name="play-outline"></ion-icon> Start Learning
+        </a>
+    </div>
+
+    <!-- Main Content Panel -->
+    <div class="main-content-panel">
+        <!-- Stats Row -->
+        <div class="stats-grid">
+            <div class="glass-panel stat-card">
+                <div>
+                    <div class="stat-label">Productivity Score</div>
+                    <div class="stat-value text-gradient-purple-blue">{{ accuracy }}%</div>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Overall practice accuracy</div>
+            </div>
+            
+            <div class="glass-panel stat-card">
+                <div>
+                    <div class="stat-label">Daily Streak</div>
+                    <div class="stat-value" style="color: var(--accent-pink); display: flex; align-items: center; gap: 0.25rem;">
+                        <ion-icon name="flame"></ion-icon> {{ streak }}
+                    </div>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Days practiced in a row</div>
+            </div>
+
+            <div class="glass-panel stat-card">
+                <div>
+                    <div class="stat-label">Estimated Time Saved</div>
+                    <div class="stat-value" style="color: var(--accent-cyan);">{{ time_saved_min }}m</div>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Lifetime seconds converted to mins</div>
+            </div>
+
+            <div class="glass-panel stat-card">
+                <div>
+                    <div class="stat-label">Total Completed</div>
+                    <div class="stat-value">{{ total_practices }}</div>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Total shortcuts logged</div>
+            </div>
+        </div>
+
+        <!-- Weekly Activity Graph -->
+        <div class="glass-panel dashboard-section">
+            <div class="section-header">
+                <h3>Weekly Practice Volume</h3>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Last 7 Days</span>
+            </div>
+            <div style="position: relative; height: 260px; width: 100%;">
+                <canvas id="weeklyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- AI Recommendations & Recent Logs -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <!-- Recommendations -->
+            <div class="glass-panel dashboard-section">
+                <div class="section-header">
+                    <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+                        <ion-icon name="sparkles" style="color: var(--accent-purple);"></ion-icon> AI Recommendations
+                    </h3>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% if recommendations %}
+                        {% for item in recommendations %}
+                            <div class="glass-panel" style="padding: 1rem; border-color: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <div class="shortcut-key-wrapper" style="margin-bottom: 0.25rem;">
+                                        <span class="key-cap" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
+                                            {% if user.preferred_os == 'mac' %}{{ item.keys_mac }}{% else %}{{ item.keys_windows }}{% endif %}
+                                        </span>
+                                    </div>
+                                    <div style="font-size: 0.85rem; font-weight: 600;">{{ item.description }}</div>
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem;">{{ item.application.name }} • Saves ~{{ item.estimated_time_saved }}s</div>
+                                </div>
+                                <a href="{% url 'practice:session' %}?shortcut_id={{ item.id }}" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 8px;">
+                                    Train
+                                </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">No shortcuts seeded yet. Admin needs to populate library.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent logs -->
+            <div class="glass-panel dashboard-section">
+                <div class="section-header">
+                    <h3>Recent Practice History</h3>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% if recent_logs %}
+                        {% for log in recent_logs %}
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem;">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--text-primary);">{{ log.shortcut.description }}</div>
+                                    <div style="font-size: 0.72rem; color: var(--text-muted);">{{ log.created_at|timesince }} ago</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    {% if log.is_correct %}
+                                        <span style="color: var(--accent-green); font-weight: 700;">+{{ log.xp_earned }} XP</span>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">Failed</span>
+                                    {% endif %}
+                                    <div style="font-size: 0.72rem; color: var(--text-muted);">{{ log.accuracy }}% Acc</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-top: 1rem;">No recent practice history. Hit the practice field!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Set up practice history chart
+    const ctx = document.getElementById('weeklyChart').getContext('2d');
+    
+    // Fetch dynamic dataset from context processor variables
+    const labels = {{ days_of_week|safe }};
+    const dataset = {{ daily_stats|safe }};
+    
+    const weeklyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Shortcuts Practiced',
+                data: dataset,
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#fff',
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' }, precision: 0 },
+                    beginAtZero: true
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

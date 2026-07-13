@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-tagline">Stop Wasting Keystrokes</div>
+    <h1 class="hero-title">Master the Keyboard.<br><span class="text-gradient-purple-blue">Work at the Speed of Thought.</span></h1>
+    <p class="hero-subtitle">Professionals lose up to 64 hours a year clicking through nested menus. Learn shortcut muscle memory interactively with AI-guided recommendations.</p>
+    <div class="hero-buttons">
+        <a href="{% url 'signup' %}" class="btn-primary">
+            <ion-icon name="rocket-outline"></ion-icon> Start Learning Free
+        </a>
+        <a href="{% url 'shortcuts:library' %}" class="btn-secondary">
+            Explore Shortcuts
+        </a>
+    </div>
+</div>
+
+<!-- Interactive Keyboard Showcase Preview -->
+<div class="glass-panel" style="padding: 2rem; max-width: 800px; margin: 0 auto; text-align: center; box-shadow: var(--shadow-premium);">
+    <h3 style="margin-bottom: 0.5rem;">Interactive Muscle Memory Training</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">Type directly on your screen keyboard. Green highlights correct keystrokes instantly.</p>
+    
+    <div class="keyboard-container" style="margin-top: 1rem; pointer-events: none;">
+        <div class="keyboard-row">
+            <div class="vk-key active">Ctrl</div>
+            <div class="vk-key">Alt</div>
+            <div class="vk-key active">Shift</div>
+            <div class="vk-key">A</div>
+            <div class="vk-key">S</div>
+            <div class="vk-key active">P</div>
+        </div>
+    </div>
+    <div style="margin-top: 1rem; color: var(--accent-purple); font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <ion-icon name="sparkles"></ion-icon> Match Found: Command Palette (VS Code)
+    </div>
+</div>
+
+<!-- Features Grid -->
+<div class="features-grid">
+    <div class="glass-panel feature-card glass-panel-interactive">
+        <div class="feature-icon"><ion-icon name="keypad-outline"></ion-icon></div>
+        <h3>Keyboard Capture</h3>
+        <p>Dynamic virtual keyboard highlights active keypress combinations in real-time with exact accuracy logs.</p>
+    </div>
+    <div class="glass-panel feature-card glass-panel-interactive">
+        <div class="feature-icon"><ion-icon name="brain-outline"></ion-icon></div>
+        <h3>AI Recommendation</h3>
+        <p>Our background analysis identifies which application shortcuts you struggle with and suggests targeted practice logs.</p>
+    </div>
+    <div class="glass-panel feature-card glass-panel-interactive">
+        <div class="feature-icon"><ion-icon name="trophy-outline"></ion-icon></div>
+        <h3>Gamified Mastery</h3>
+        <p>Unlock achievements, boost your levels, maintain learning streaks, and climb up the leaderboard ranks.</p>
+    </div>
+</div>
+
+<!-- Time Savings Calculator -->
+<div class="glass-panel calc-container" id="calculator">
+    <h2 class="calc-title"><span class="text-gradient-pink-orange">Time Savings Calculator</span></h2>
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem;">Estimate how many hours you could claw back by automating mouse clicks.</p>
+    
+    <div class="form-group">
+        <label for="hours-work">Daily Hours Working on a Computer</label>
+        <input type="number" id="hours-work" class="form-input" value="8" min="1" max="24">
+    </div>
+    <div class="form-group">
+        <label for="mouse-percentage">Estimated Mouse Usage Percentage (%)</label>
+        <input type="range" id="mouse-percentage" class="form-input" min="10" max="90" value="50" style="padding: 0;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+            <span>10% (Keyboard Wizard)</span>
+            <span id="mouse-percentage-label" style="color: var(--accent-pink); font-weight: 700;">50%</span>
+            <span>90% (Clicker)</span>
+        </div>
+    </div>
+    
+    <div class="calc-result">
+        <p style="margin-bottom: 0.5rem; font-weight: 500;">Your Estimated Annual Time Savings</p>
+        <div class="calc-number"><span id="savings-hours">38.4</span> Hours</div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;" id="savings-days">Equivalent to 4.8 full work days saved per year!</p>
+    </div>
+</div>
+
+<!-- Pricing Section -->
+<div style="text-align: center; margin-top: 6rem;">
+    <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Affordable Plans for Every Professional</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 3rem;">Unlock full access to advanced AI evaluations and application packages.</p>
+    
+    <div class="features-grid" style="max-width: 900px; margin: 0 auto;">
+        <div class="glass-panel" style="padding: 2.5rem; text-align: center;">
+            <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Free Core</h4>
+            <div style="font-size: 2.2rem; font-weight: 800; margin: 1rem 0;">$0</div>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem;">Basic applications & default virtual feedback logs.</p>
+            <ul style="text-align: left; list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><ion-icon name="checkmark" style="color: var(--accent-green);"></ion-icon> 5 Core Applications</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><ion-icon name="checkmark" style="color: var(--accent-green);"></ion-icon> Keyboard Input Detection</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><ion-icon name="checkmark" style="color: var(--accent-green);"></ion-icon> Global Leaderboard</li>
+            </ul>
+            <a href="{% url 'signup' %}" class="btn-secondary" style="width: 100%; justify-content: center;">Choose Free</a>
+        </div>
+        
+        <div class="glass-panel" style="padding: 2.5rem; text-align: center; border-color: var(--border-glass-glow); box-shadow: var(--shadow-premium), var(--shadow-glow); position: relative; transform: translateY(-8px);">
+            <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); font-size: 0.75rem; font-weight: 700; color: #fff; padding: 0.25rem 0.8rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05rem;">Most Popular</div>
+            <h4 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Developer Pro</h4>
+            <div style="font-size: 2.2rem; font-weight: 800; margin: 1rem 0;" class="text-gradient-purple-blue">$8 <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">/ mo</span></div>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem;">Full access to premium libraries, custom shortcuts, and AI analytics.</p>
+            <ul style="text-align: left; list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><ion-icon name="checkmark" style="color: var(--accent-green);"></ion-icon> All 10+ Integrated Apps</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><ion-icon name="checkmark" style="color: var(--accent-green);"></ion-icon> Personalized AI Recommendations</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><ion-icon name="checkmark" style="color: var(--accent-green);"></ion-icon> Double XP Challenges</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><ion-icon name="checkmark" style="color: var(--accent-green);"></ion-icon> Analytics Trends & Custom Badges</li>
+            </ul>
+            <a href="{% url 'signup' %}" class="btn-primary" style="width: 100%; justify-content: center;">Choose Pro</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Time Savings Calculator Logic
+    const hoursWork = document.getElementById('hours-work');
+    const mousePercentage = document.getElementById('mouse-percentage');
+    const mouseLabel = document.getElementById('mouse-percentage-label');
+    const savingsHours = document.getElementById('savings-hours');
+    const savingsDays = document.getElementById('savings-days');
+
+    function calculateSavings() {
+        const hours = parseFloat(hoursWork.value) || 0;
+        const pct = parseFloat(mousePercentage.value) || 0;
+        
+        mouseLabel.textContent = pct + '%';
+        
+        // Let's assume using shortcuts saves 10% of mouse movement time.
+        // A year has roughly 240 work days.
+        // Annual savings (hours) = hours_worked * (mouse_pct/100) * 0.10 (shortcut efficiency gain) * 240 days
+        const saved = hours * (pct / 100) * 0.12 * 240;
+        const roundedSaved = Math.round(saved * 10) / 10;
+        savingsHours.textContent = roundedSaved;
+        
+        const workDays = Math.round((roundedSaved / 8) * 10) / 10;
+        savingsDays.textContent = `Equivalent to ${workDays} full work days saved per year!`;
+    }
+
+    hoursWork.addEventListener('input', calculateSavings);
+    mousePercentage.addEventListener('input', calculateSavings);
+</script>
+{% endblock %}
