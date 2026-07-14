@@ -1,0 +1,30 @@
+databases:
+  - name: shortcutmaster-ai-db
+    plan: free
+    databaseName: shortcutmaster_ai
+    user: shortcutmaster_ai
+
+services:
+  - type: web
+    name: shortcutmaster-ai
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: gunicorn shortcutmaster.wsgi:application --log-file -
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: shortcutmaster-ai-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: shortcutmaster-ai.onrender.com
+      - key: DJANGO_SECURE_SSL_REDIRECT
+        value: "True"
+      - key: DJANGO_SECURE_HSTS_SECONDS
+        value: "31536000"

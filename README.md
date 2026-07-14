@@ -43,8 +43,8 @@ The desktop agent never sends typed text, clipboard contents, URLs, passwords, o
 
 ## Technology Stack
 
-- Python 3.8+
-- Django 3.1.8
+- Python 3.11.9 on Render
+- Django 4.2 LTS
 - SQLite
 - Gunicorn
 - WhiteNoise
@@ -122,17 +122,26 @@ DJANGO_SECURE_HSTS_SECONDS=31536000
 
 ## Deployment Instructions
 
-1. Set production environment variables.
-2. Install dependencies with `pip install -r requirements.txt`.
-3. Run migrations with `python manage.py migrate`.
-4. Collect static assets with `python manage.py collectstatic --noinput`.
-5. Start the web process with the Procfile command:
+### Render
+
+This repository includes `runtime.txt`, `Procfile`, and `render.yaml` for Render deployment.
+
+1. Connect the GitHub repository to Render.
+2. Use the included Blueprint or configure a Python web service manually.
+3. Set `SECRET_KEY`, `DEBUG=False`, and `ALLOWED_HOSTS` for the Render hostname or custom domain.
+4. Use this build command:
 
 ```bash
-gunicorn shortcutmaster.wsgi --log-file -
+pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
 ```
 
-WhiteNoise serves compressed static files from `staticfiles/`. Keep `DEBUG=False` and configure `ALLOWED_HOSTS` for the deployment domain.
+5. Use this start command:
+
+```bash
+gunicorn shortcutmaster.wsgi:application --log-file -
+```
+
+WhiteNoise serves compressed static files from `staticfiles/`. Render's `RENDER_EXTERNAL_HOSTNAME` is automatically added to `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` by `shortcutmaster/settings.py`.
 
 ## Privacy Policy
 

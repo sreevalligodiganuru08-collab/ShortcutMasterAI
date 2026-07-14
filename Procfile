@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput && gunicorn shortcutmaster.wsgi --log-file -
+web: gunicorn shortcutmaster.wsgi:application --log-file -
