@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+    <section class="profile-layout">
+        <aside class="profile-card">
+            <div class="avatar">{% if user.is_authenticated %}{{ user.username|first|upper }}{% else %}G{% endif %}</div>
+            <h1>{% if user.is_authenticated %}{{ user.username }}{% else %}Guest Learner{% endif %}</h1>
+            <p class="profile-sub">Level {{ stats.level }} &middot; {{ stats.xp }} XP</p>
+            <p class="profile-email" style="font-size: 14px; color: var(--muted); word-break: break-all; margin: 4px 0 0 0;">{% if user.is_authenticated %}{{ user.email }}{% else %}guest@shortcutmaster.ai{% endif %}</p>
+            <a class="button primary" style="width: 100%; margin-top: 18px;" href="{% url 'practice' %}">Practice Today</a>
+        </aside>
+        
+        <section class="dashboard-grid profile-details">
+            <article class="wide-card">
+                <span>Joined Date</span>
+                <h3>{% if user.is_authenticated %}{{ user.date_joined|date:"F d, Y" }}{% else %}Preview Account{% endif %}</h3>
+            </article>
+
+            <article class="wide-card">
+                <span>Preferred Apps (Dynamic Usage)</span>
+                <h3>{% if preferred_apps %}{{ preferred_apps|join:", " }}{% else %}Windows, Chrome, VS Code{% endif %}</h3>
+            </article>
+
+            <article class="wide-card">
+                <span>Practice Statistics</span>
+                <div class="completion-grid" style="margin-top: 12px;">
+                    <div>
+                        <strong>{{ stats.completed_lessons }}/{{ stats.total_lessons }}</strong>
+                        <span>Lessons Completed</span>
+                    </div>
+                    <div>
+                        <strong>{{ stats.completed_shortcuts }}/{{ stats.total_shortcuts }}</strong>
+                        <span>Shortcuts Learned</span>
+                    </div>
+                    <div>
+                        <strong>{{ stats.accuracy }}%</strong>
+                        <span>Avg Accuracy</span>
+                    </div>
+                </div>
+                <div class="completion-grid" style="margin-top: 12px;">
+                    <div>
+                        <strong>{{ stats.streak }} days</strong>
+                        <span>Current Streak</span>
+                    </div>
+                    <div>
+                        <strong>{{ stats.time_saved_minutes }} min</strong>
+                        <span>Time Saved</span>
+                    </div>
+                    <div>
+                        <strong>{{ stats.xp }}</strong>
+                        <span>Total XP</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="wide-card">
+                <span>Recent Sessions</span>
+                <ul class="clean-list" style="margin-top: 12px; gap: 12px;">
+                    {% for session in history %}
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+                            <div>
+                                <strong>{{ session.lesson.title }}</strong>
+                                <p style="font-size: 12px; color: var(--muted); margin: 4px 0 0 0;">
+                                    {{ session.completed_at|date:"M d, Y h:i A" }}
+                                </p>
+                            </div>
+                            <div style="text-align: right;">
+                                <strong>+{{ session.xp_earned }} XP</strong>
+                                <p style="font-size: 12px; color: var(--muted); margin: 4px 0 0 0;">
+                                    {{ session.completed_shortcuts }}/{{ session.total_shortcuts }} items &middot; {{ session.accuracy }}% acc
+                                </p>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li>No practice sessions logged yet. Complete your first lesson!</li>
+                    {% endfor %}
+                </ul>
+            </article>
+
+            <article class="wide-card" style="grid-column: span 2;">
+                <span>Achievements Progress</span>
+                <div class="achievement-grid" style="margin-top: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                    {% for row in achievements %}
+                        <div class="achievement-card {% if row.unlocked_at %}is-unlocked{% endif %}" style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); opacity: {% if row.unlocked_at %}1{% else %}0.55{% endif %};">
+                            <h4 style="margin: 0 0 4px 0; color: var(--ink);">{{ row.achievement.name }}</h4>
+                            <p style="font-size: 13px; margin: 0 0 8px 0; color: var(--muted);">{{ row.achievement.description }}</p>
+                            <div class="progress-bar" style="height: 6px; margin: 8px 0;"><span style="width: {% widthratio row.progress row.target 100 %}%"></span></div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; color: var(--muted);">
+                                <span>{{ row.progress }}/{{ row.target }}</span>
+                                <span>{% if row.unlocked_at %}Unlocked {{ row.unlocked_at|date:"M d" }}{% else %}Locked{% endif %}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </section>
+    </section>
+</main>
+{% endblock %}

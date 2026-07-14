@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}ShortcutMaster AI | Learn the shortcuts that save real time{% endblock %}
+
+{% block content %}
+<main>
+    <section class="hero landing-hero">
+        <div class="hero-content">
+            <p class="eyebrow">AI shortcut coach for daily work</p>
+            <h1>Stop losing minutes to mouse work.</h1>
+            <p class="hero-copy">
+                ShortcutMaster AI builds a personal shortcut curriculum from the work you do every day,
+                then turns it into short drills with progress, XP, weak-area feedback, and time saved.
+            </p>
+            <div class="hero-actions">
+                <a class="button primary" href="{% url 'practice' %}">Start Today's Practice</a>
+                <a class="button secondary" href="{% url 'coach' %}">See AI Coach</a>
+            </div>
+            <div class="hero-proof">
+                <span><strong>{{ stats.total_shortcuts }}</strong> curated shortcuts</span>
+                <span><strong>{{ stats.time_saved_minutes }} min</strong> saved this month</span>
+                <span><strong>{{ stats.accuracy }}%</strong> current accuracy</span>
+            </div>
+        </div>
+        <div class="hero-panel ai-preview" aria-label="ShortcutMaster AI coaching preview">
+            <div class="panel-top"><span></span><span></span><span></span></div>
+            <div class="coach-bubble">
+                <span class="mini-label">AI Coach</span>
+                <strong>Learn Ctrl+Shift+T next.</strong>
+                <p>You closed browser tabs often this week. This one habit can save around 40 seconds a day.</p>
+            </div>
+            <div class="keyboard-illustration" aria-hidden="true">
+                <span>Ctrl</span><span>Shift</span><span>T</span>
+            </div>
+            <div class="progress-row">
+                <span>Lesson readiness</span>
+                <strong>72%</strong>
+            </div>
+            <div class="progress-bar"><span style="width:72%"></span></div>
+        </div>
+    </section>
+
+    <section class="split-section">
+        <div>
+            <p class="eyebrow">The problem</p>
+            <h2>Shortcut trainers teach lists. Professionals need context.</h2>
+        </div>
+        <div class="problem-grid">
+            <article class="soft-card"><h3>Random lessons</h3><p>Most tools teach whatever is available, not what saves time in your role.</p></article>
+            <article class="soft-card"><h3>No learning order</h3><p>Users do not know which shortcut to learn first, so practice becomes guesswork.</p></article>
+            <article class="soft-card"><h3>No proof of speed</h3><p>Accuracy, streaks, time saved, and weak areas are usually invisible.</p></article>
+        </div>
+    </section>
+
+    <section class="solution-band">
+        <div class="section-heading centered">
+            <p class="eyebrow">The solution</p>
+            <h2>Duolingo-style lessons, Grammarly-style feedback, Notion AI-style guidance.</h2>
+            <p>ShortcutMaster AI turns small daily drills into measurable workplace speed.</p>
+        </div>
+        <div class="feature-grid four">
+            <article class="feature-card"><span class="feature-icon">01</span><h3>Personal lessons</h3><p>Shortcuts are grouped into practical sequences like editing, search, browser recovery, and power-user flow.</p></article>
+            <article class="feature-card"><span class="feature-icon">02</span><h3>Smart coaching</h3><p>Mock AI insights explain what to learn next, why it matters, and how much time it can save.</p></article>
+            <article class="feature-card"><span class="feature-icon">03</span><h3>Real practice</h3><p>Keyboard detection validates the actual shortcut instead of asking users to click multiple-choice answers.</p></article>
+            <article class="feature-card"><span class="feature-icon">04</span><h3>Progress signals</h3><p>XP, streaks, accuracy, time saved, badges, and weak areas make improvement visible.</p></article>
+        </div>
+    </section>
+
+    <section class="how-section">
+        <div class="section-heading">
+            <p class="eyebrow">How it works</p>
+            <h2>Three minutes a day, focused on the shortcuts that matter.</h2>
+        </div>
+        <div class="timeline">
+            <article><span>1</span><h3>Pick today's lesson</h3><p>Start with the next recommended workflow, not a random shortcut list.</p></article>
+            <article><span>2</span><h3>Press real keys</h3><p>The trainer listens for the actual combination and moves forward only once per shortcut.</p></article>
+            <article><span>3</span><h3>Review improvement</h3><p>Finish with XP, accuracy, average speed, weak areas, and the next lesson.</p></article>
+        </div>
+    </section>
+
+    <section class="stats-band">
+        <div><strong>{{ stats.total_lessons }}</strong><span>guided lessons</span></div>
+        <div><strong>{{ stats.total_shortcuts }}</strong><span>workplace shortcuts</span></div>
+        <div><strong>{{ stats.streak }}</strong><span>day streak</span></div>
+        <div><strong>{{ stats.xp }}</strong><span>XP earned</span></div>
+    </section>
+
+    <section class="benefits-section">
+        <div class="section-heading">
+            <p class="eyebrow">Real benefits</p>
+            <h2>Designed for knowledge workers, operators, analysts, designers, and developers.</h2>
+        </div>
+        <div class="feature-grid">
+            <article class="feature-card"><h3>Save small moments</h3><p>Replace repeated clicks with muscle memory across browser tabs, documents, code, and spreadsheets.</p></article>
+            <article class="feature-card"><h3>Know what to learn</h3><p>Lessons prioritize common work patterns before advanced shortcuts.</p></article>
+            <article class="feature-card"><h3>Measure speed</h3><p>Progress pages translate practice into accuracy, XP, streaks, and estimated time saved.</p></article>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="section-heading centered">
+            <p class="eyebrow">What professionals say</p>
+            <h2>Practice that feels connected to work.</h2>
+        </div>
+        <div class="feature-grid">
+            <article class="quote-card"><p>"The recommendations make it obvious what to practice next. I finally stopped ignoring browser shortcuts."</p><strong>Operations Lead</strong></article>
+            <article class="quote-card"><p>"It feels less like a keyboard quiz and more like a coach watching for time leaks."</p><strong>Product Manager</strong></article>
+            <article class="quote-card"><p>"The lesson complete screen makes progress tangible. The weak-area notes are the hook."</p><strong>Software Engineer</strong></article>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <div class="section-heading">
+            <p class="eyebrow">FAQ</p>
+            <h2>Built for a practical MVP, ready to grow.</h2>
+        </div>
+        <div class="faq-list">
+            <details open><summary>How does AI help?</summary><p>The current MVP uses mock coaching insights, but the product model is built around recommendations tied to skipped shortcuts, weak categories, and estimated time saved.</p></details>
+            <details><summary>Does practice repeat shortcuts?</summary><p>No. Each lesson shows every shortcut once, then stops at a lesson complete screen.</p></details>
+            <details><summary>Can I browse shortcuts by app?</summary><p>Yes. The Shortcut Library supports search plus filters for apps, category, and difficulty.</p></details>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <p class="eyebrow">Ready for daily speed</p>
+        <h2>Build the keyboard habits your work already needs.</h2>
+        <a class="button primary" href="{% url 'practice' %}">Start Today's Practice</a>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Progress | ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+    <section class="page-hero compact">
+        <div>
+            <p class="eyebrow">Progress</p>
+            <h1>Your improvement, made visible.</h1>
+            <p>Track completion, XP, streaks, time saved, weekly activity, badges, and learning consistency.</p>
+        </div>
+    </section>
+
+    <section class="dashboard-grid">
+        <article class="metric-card">
+            <span>Completion</span>
+            <strong>{{ stats.completed_shortcuts }}/{{ stats.total_shortcuts }}</strong>
+            <p>{{ stats.course_progress }}% course completion percentage.</p>
+        </article>
+        <article class="metric-card">
+            <span>XP & Level</span>
+            <strong>{{ stats.xp }} XP</strong>
+            <p>Current Level: {{ stats.level }}</p>
+        </article>
+        <article class="metric-card">
+            <span>Badges</span>
+            <strong>{{ unlocked_badges }}</strong>
+            <p>Unlocked achievements in SQLite.</p>
+        </article>
+        <article class="metric-card">
+            <span>Time Saved</span>
+            <strong>{{ stats.time_saved_minutes }} min</strong>
+            <p>Estimated total time saved in work.</p>
+        </article>
+
+        <article class="wide-card">
+            <span>Learning Heatmap (Last 28 Days)</span>
+            <div class="heatmap" aria-label="Learning heatmap" style="margin-top: 12px;">
+                {% for day in heatmap %}
+                    <i class="heat-{{ day.level }}" title="{{ day.date_str }}: {{ day.count }} sessions ({{ day.day_name }})"></i>
+                {% endfor %}
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 8px; font-weight: 800;">
+                <span>28 days ago</span>
+                <span style="display: flex; gap: 4px; align-items: center;">
+                    Less 
+                    <i class="heat-0" style="width: 10px; height: 10px; display: inline-block; border-radius: 2px;"></i>
+                    <i class="heat-1" style="width: 10px; height: 10px; display: inline-block; border-radius: 2px;"></i>
+                    <i class="heat-2" style="width: 10px; height: 10px; display: inline-block; border-radius: 2px;"></i>
+                    <i class="heat-3" style="width: 10px; height: 10px; display: inline-block; border-radius: 2px;"></i>
+                    More
+                </span>
+                <span>Today</span>
+            </div>
+        </article>
+
+        <article class="wide-card">
+            <span>Weekly Activity</span>
+            <div class="bar-chart tall">
+                {% for value in stats.weekly_scaled %}
+                    <i style="height: {{ value }}%" title="Activity level: {{ value }}%"></i>
+                {% endfor %}
+            </div>
+            <div class="calendar-strip" style="margin-top: 12px;">
+                {% for day in calendar_days %}
+                    <span style="min-height: auto; padding: 4px 0; font-size: 12px;">{{ day }}</span>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="wide-card">
+            <span>Accuracy Trend (Last 8 Practices)</span>
+            <div style="display: flex; gap: 12px; align-items: flex-end; height: 160px; padding-top: 20px;">
+                {% for acc in trends.accuracies %}
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%;">
+                        <span style="font-size: 11px; font-weight: 900; color: var(--primary); margin-bottom: 4px;">{% if acc > 0 %}{{ acc }}%{% else %}-{% endif %}</span>
+                        <div style="width: 100%; height: {{ acc }}%; background: linear-gradient(180deg, var(--primary), #149a8d); border-radius: 6px 6px 0 0; min-height: 4px;"></div>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="wide-card">
+            <span>XP Trend (Last 8 Practices)</span>
+            <div style="display: flex; gap: 12px; align-items: flex-end; height: 160px; padding-top: 20px;">
+                {% for xp in trends.xps %}
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%;">
+                        <span style="font-size: 11px; font-weight: 900; color: var(--blue); margin-bottom: 4px;">{% if xp > 0 %}+{{ xp }}{% else %}-{% endif %}</span>
+                        {% widthratio xp 150 100 as xp_percent %}
+                        <div style="width: 100%; height: {{ xp_percent }}%; background: linear-gradient(180deg, var(--blue), #60a5fa); border-radius: 6px 6px 0 0; min-height: 4px;"></div>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="wide-card" style="grid-column: span 2;">
+            <span>Completed Lessons</span>
+            <ul class="clean-list" style="margin-top: 12px; gap: 10px;">
+                {% for lesson in completed_lessons_list %}
+                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+                        <div>
+                            <strong>Lesson {{ lesson.id }}: {{ lesson.title }}</strong>
+                            <p style="font-size: 12px; color: var(--muted); margin: 4px 0 0 0;">{{ lesson.category }} &middot; {{ lesson.difficulty }}</p>
+                        </div>
+                        <span style="color: var(--success); font-weight: 900; font-size: 13px;">Mastered</span>
+                    </li>
+                {% empty %}
+                    <li>No completed lessons yet. Start practicing and finish quizzes to master lessons!</li>
+                {% endfor %}
+            </ul>
+        </article>
+
+        <article class="wide-card">
+            <span>Practice Session Log</span>
+            <ul class="clean-list" style="margin-top: 12px; gap: 10px;">
+                {% for session in sessions %}
+                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+                        <div>
+                            <strong>{{ session.lesson.title }}</strong>
+                            <p style="font-size: 12px; color: var(--muted); margin: 4px 0 0 0;">{{ session.completed_at|date:"M d, Y h:i A" }}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: var(--primary);">{{ session.accuracy }}% Accuracy</strong>
+                            <p style="font-size: 12px; color: var(--muted); margin: 4px 0 0 0;">+{{ session.xp_earned }} XP &middot; {{ session.average_speed_seconds }}s speed</p>
+                        </div>
+                    </li>
+                {% empty %}
+                    <li>No practice sessions recorded yet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+
+        <article class="wide-card">
+            <span>Practical Quiz Log</span>
+            <ul class="clean-list" style="margin-top: 12px; gap: 10px;">
+                {% for quiz in quizzes %}
+                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+                        <div>
+                            <strong>{{ quiz.quiz.title }}</strong>
+                            <p style="font-size: 12px; color: var(--muted); margin: 4px 0 0 0;">{{ quiz.completed_at|date:"M d, Y h:i A" }}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: var(--blue);">Score: {{ quiz.score }}</strong>
+                            <p style="font-size: 12px; color: var(--muted); margin: 4px 0 0 0;">{{ quiz.accuracy }}% Accuracy &middot; {{ quiz.reaction_time_seconds }}s speed</p>
+                        </div>
+                    </li>
+                {% empty %}
+                    <li>No quiz scores logged yet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+</main>
+{% endblock %}

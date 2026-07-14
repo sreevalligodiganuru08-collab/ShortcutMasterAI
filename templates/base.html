@@ -1,123 +1,56 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ShortcutMaster AI - Learn Smarter. Work Faster.{% endblock %}</title>
-    <meta name="description" content="Learn keyboard shortcuts with ShortcutMaster AI, personalized learning, daily challenges, and gamified progress logs.">
-    
-    {% load static %}
-    <!-- Core CSS -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{% block title %}ShortcutMaster AI{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- Ionicons CDN for icons -->
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    
-    <script>
-        // Set theme before content renders to prevent flash
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-    </script>
-    {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <header>
-        <div class="nav-container">
-            <a href="{% url 'landing' %}" class="logo">
-                <ion-icon name="flash" style="color: var(--accent-purple); font-size: 1.8rem;"></ion-icon>
-                ShortcutMaster<span>AI</span>
+    <header class="site-header">
+        <nav class="nav" aria-label="Primary navigation">
+            <a class="brand" href="{% url 'index' %}" aria-label="ShortcutMaster AI home">
+                <span class="brand-mark">S</span>
+                <span>ShortcutMaster AI</span>
             </a>
-            
-            <nav class="nav-links">
-                <a href="{% url 'landing' %}" class="nav-link">Home</a>
-                <a href="{% url 'shortcuts:library' %}" class="nav-link">Shortcuts</a>
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="is-active"{% endif %}>Dashboard</a>
+                <a href="{% url 'practice' %}" {% if request.resolver_match.url_name == 'practice' %}class="is-active"{% endif %}>Today's Practice</a>
+                <a href="{% url 'coach' %}" {% if request.resolver_match.url_name == 'coach' %}class="is-active"{% endif %}>AI Coach</a>
+                <a href="{% url 'library' %}" {% if request.resolver_match.url_name == 'library' %}class="is-active"{% endif %}>Shortcut Library</a>
+                <a href="{% url 'achievements' %}" {% if request.resolver_match.url_name == 'achievements' %}class="is-active"{% endif %}>Achievements</a>
+                <a href="{% url 'progress' %}" {% if request.resolver_match.url_name == 'progress' %}class="is-active"{% endif %}>Progress</a>
+                <a href="{% url 'reports' %}" {% if request.resolver_match.url_name == 'reports' %}class="is-active"{% endif %}>Reports</a>
+                <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="is-active"{% endif %}>Profile</a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'practice:home' %}" class="nav-link">Practice</a>
-                <a href="{% url 'analytics:home' %}" class="nav-link">Analytics</a>
-                <a href="{% url 'leaderboard' %}" class="nav-link">Leaderboard</a>
-                {% endif %}
-                <a href="{% url 'about' %}" class="nav-link">About</a>
-                <a href="{% url 'contact' %}" class="nav-link">Contact</a>
-            </nav>
-            
-            <div class="nav-auth">
-                <!-- Theme Toggle -->
-                <button id="theme-toggle" class="btn-secondary" style="padding: 0.5rem; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">
-                    <ion-icon name="moon-outline" id="theme-icon"></ion-icon>
-                </button>
-                
-                {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="btn-secondary" style="padding: 0.6rem 1.2rem;">
-                    <ion-icon name="apps-outline" style="font-size: 1rem;"></ion-icon> Dashboard
-                </a>
-                <a href="{% url 'logout' %}" class="btn-secondary" style="padding: 0.6rem 1.2rem; border-color: rgba(239, 68, 68, 0.3); color: #fca5a5;">
-                    <ion-icon name="log-out-outline" style="font-size: 1rem;"></ion-icon> Logout
-                </a>
+                    <a class="nav-cta" href="{% url 'logout' %}">Logout</a>
                 {% else %}
-                <a href="{% url 'login' %}" class="nav-link">Log In</a>
-                <a href="{% url 'signup' %}" class="btn-primary" style="padding: 0.6rem 1.4rem;">Get Started</a>
+                    <a class="nav-cta" href="{% url 'login' %}">Login</a>
                 {% endif %}
             </div>
-        </div>
+        </nav>
     </header>
 
-    {% if messages %}
-        {% for message in messages %}
-        <div class="alert-banner alert-{% if message.tags == 'error' %}error{% else %}success{% endif %} glass-panel" id="alert-banner">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <ion-icon name="{% if message.tags == 'error' %}alert-circle-outline{% else %}checkmark-circle-outline{% endif %}" style="font-size: 1.3rem;"></ion-icon>
-                    <span>{{ message }}</span>
-                </div>
-                <button onclick="document.getElementById('alert-banner').remove()" style="background: none; border: none; color: inherit; cursor: pointer; display: flex; align-items: center;">
-                    <ion-icon name="close-outline" style="font-size: 1.2rem;"></ion-icon>
-                </button>
-            </div>
+    {% block content %}{% endblock %}
+
+    <footer class="footer" id="footer">
+        <div>
+            <strong>ShortcutMaster AI</strong>
+            <p>AI-guided keyboard training for professionals who want their time back.</p>
         </div>
-        {% endfor %}
-    {% endif %}
-
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer>
-        <p>&copy; 2026 ShortcutMaster AI. All rights reserved. Designed for elite keyboard efficiency.</p>
+        <div class="footer-links">
+            <a href="{% url 'practice' %}">Practice</a>
+            <a href="{% url 'coach' %}">AI Coach</a>
+            <a href="{% url 'library' %}">Library</a>
+        </div>
     </footer>
-
-    <script>
-        // Dismiss notifications automatically
-        const banner = document.getElementById('alert-banner');
-        if (banner) {
-            setTimeout(() => {
-                banner.style.animation = "slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) reverse forwards";
-                setTimeout(() => banner.remove(), 300);
-            }, 4000);
-        }
-
-        // Handle Theme Toggle
-        const themeBtn = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        
-        function updateThemeIcon(theme) {
-            if (theme === 'light') {
-                themeIcon.setAttribute('name', 'sunny-outline');
-            } else {
-                themeIcon.setAttribute('name', 'moon-outline');
-            }
-        }
-        
-        updateThemeIcon(savedTheme);
-
-        themeBtn.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-        });
-    </script>
-    {% block extra_js %}{% endblock %}
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

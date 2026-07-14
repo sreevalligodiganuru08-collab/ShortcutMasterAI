@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}AI Coach | ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+    <section class="coach-hero">
+        <div>
+            <p class="eyebrow">AI Coach</p>
+            <h1>Your personal productivity coach.</h1>
+            <p>The coach turns anonymous desktop signals into a ranked learning plan. It does not need typed text, passwords, document content, URLs, or clipboard contents.</p>
+        </div>
+        <div class="coach-score-card">
+            <span>Weekly Productivity Score</span>
+            <strong>{{ usage.productivity_score }}</strong>
+            <p>Potential time saved: {{ usage.potential_time_saved_minutes }} minutes this week.</p>
+        </div>
+    </section>
+
+    <section class="coach-command-grid">
+        <article class="coach-panel span-2">
+            <span>Today's Biggest Time Wasters</span>
+            <div class="time-waster-list">
+                {% for item in usage.time_wasters %}
+                    <div>
+                        <strong>{{ item.label }}</strong>
+                        <p>{{ item.detail }}</p>
+                        <span>{{ item.minutes }} min opportunity</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="coach-panel">
+            <span>Practice Recommendation</span>
+            <h2>Chrome Deep Work</h2>
+            <p>Start with Ctrl+Shift+T and Ctrl+Shift+V because tab recovery and clean paste are your highest-value signals.</p>
+            <a class="button primary" href="{% url 'practice' %}">Practice now</a>
+        </article>
+
+        <article class="coach-panel span-2">
+            <span>Recommended Shortcuts</span>
+            <div class="recommendation-list">
+                {% for recommendation in recommendations %}
+                    <div>
+                        <div>
+                            <strong>{{ recommendation.combo }}</strong>
+                            <h3>{{ recommendation.shortcut }}</h3>
+                            <p>{{ recommendation.reason }}</p>
+                        </div>
+                        <aside>
+                            <b>{{ recommendation.daily_saved }} min/day</b>
+                            <small>{{ recommendation.confidence }}% confidence</small>
+                        </aside>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="coach-panel">
+            <span>Most Used Applications</span>
+            <div class="app-usage-list compact">
+                {% for app in usage.most_used_apps %}
+                    <div><strong>{{ app.name }}</strong><span>{{ app.minutes }} min</span><i style="width: {{ app.score }}%"></i></div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="coach-panel">
+            <span>Real-Time User Insights</span>
+            <ul class="clean-list">
+                {% for insight in usage.coach_insights %}
+                    <li>{{ insight }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+
+        <article class="coach-panel">
+            <span>Weak Areas</span>
+            <ul class="clean-list">
+                {% for area in usage.weak_areas %}<li>{{ area }}</li>{% endfor %}
+            </ul>
+        </article>
+
+        <article class="coach-panel">
+            <span>Strengths</span>
+            <ul class="clean-list">
+                {% for strength in usage.strengths %}<li>{{ strength }}</li>{% endfor %}
+            </ul>
+        </article>
+    </section>
+</main>
+{% endblock %}

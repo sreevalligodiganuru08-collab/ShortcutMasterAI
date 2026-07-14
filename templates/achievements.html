@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Achievements | ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+    <section class="page-hero compact">
+        <div>
+            <p class="eyebrow">Achievements</p>
+            <h1>Badges that reward useful habits.</h1>
+            <p>Gamification is focused on consistency, accuracy, completion, and workplace speed.</p>
+        </div>
+    </section>
+
+    <section class="achievement-grid">
+        {% for row in achievements %}
+            <article class="achievement-card {% if row.unlocked_at %}is-unlocked{% endif %}">
+                <span class="badge-symbol">{{ forloop.counter|stringformat:"02d" }}</span>
+                <h2>{{ row.achievement.name }}</h2>
+                <p>{{ row.achievement.description }}</p>
+                <div class="progress-bar"><span style="width: {% widthratio row.progress row.target 100 %}%"></span></div>
+                <p>{{ row.progress }}/{{ row.target }} progress</p>
+                <strong>{% if row.unlocked_at %}Unlocked {{ row.unlocked_at|date:"M d, Y" }}{% else %}Locked{% endif %}</strong>
+            </article>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}

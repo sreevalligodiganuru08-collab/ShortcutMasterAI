@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Reports | ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+    <section class="page-hero compact">
+        <div>
+            <p class="eyebrow">Reports</p>
+            <h1>Anonymous productivity analysis.</h1>
+            <p>Reports summarize behavior patterns from the desktop agent without collecting personal content, typed text, passwords, URLs, or clipboard contents.</p>
+        </div>
+    </section>
+
+    <section class="dashboard-grid">
+        <article class="metric-card"><span>Mouse Clicks</span><strong>{{ usage.mouse_clicks }}</strong><p>Anonymous click count across work apps.</p></article>
+        <article class="metric-card"><span>Keyboard Shortcuts</span><strong>{{ usage.keyboard_shortcuts }}</strong><p>Shortcut usage detected today.</p></article>
+        <article class="metric-card"><span>App Switches</span><strong>{{ usage.app_switches }}</strong><p>Context switches that may be reduced.</p></article>
+        <article class="metric-card"><span>Idle Time</span><strong>{{ usage.idle_minutes }} min</strong><p>Excluded from productivity scoring.</p></article>
+
+        <article class="wide-card">
+            <span>Agent Data Contract</span>
+            <h3>Collected</h3>
+            <p>Counts for mouse clicks, shortcut usage, app switching, active application, idle time, clipboard action type, repeated workflow patterns, and browser action type.</p>
+            <h3>Never collected</h3>
+            <p>Typed text, passwords, document contents, website URLs, clipboard contents, screenshots, or personal messages.</p>
+        </article>
+
+        <article class="wide-card">
+            <span>Recommended Shortcuts From Signals</span>
+            <ul class="insight-list">
+                {% for item in recommendations %}
+                    <li><strong>{{ item.signal }}:</strong> learn {{ item.combo }} because {{ item.reason }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+
+        <article class="wide-card">
+            <span>Most Used Applications</span>
+            <div class="app-usage-list">
+                {% for app in usage.most_used_apps %}
+                    <div><strong>{{ app.name }}</strong><span>{{ app.minutes }} min active &middot; {{ app.switches }} switches</span><i style="width: {{ app.score }}%"></i></div>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
+</main>
+{% endblock %}

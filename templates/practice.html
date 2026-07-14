@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Today's Practice | ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+    <section class="page-hero compact">
+        <div>
+            <p class="eyebrow">Today's Practice</p>
+            <h1>Train shortcuts in a lesson, then prove them in a task quiz.</h1>
+            <p>Each shortcut appears once. Browser defaults are blocked only while training or quiz mode is active.</p>
+        </div>
+        <div class="lesson-picker">
+            <label for="lessonSelect">Lesson</label>
+            <select id="lessonSelect" data-lesson-select>
+                {% for lesson in lessons %}
+                    <option value="{{ forloop.counter0 }}">Lesson {{ lesson.id }}: {{ lesson.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </section>
+
+    {{ lessons|json_script:"lesson-data" }}
+
+    <section class="practice-layout" data-trainer>
+        <aside class="lesson-sidebar">
+            <div class="progress-card">
+                <span data-lesson-label>Lesson 1 of {{ lessons|length }}</span>
+                <h2 data-lesson-title>{{ lessons.0.title }}</h2>
+                <p><span data-lesson-category>{{ lessons.0.category }}</span> &middot; <span data-lesson-difficulty>{{ lessons.0.difficulty }}</span></p>
+                <div class="progress-bar large"><span data-overall-bar style="width:0%"></span></div>
+                <div class="mini-stats">
+                    <div><strong data-current-step>1</strong><span>Current</span></div>
+                    <div><strong data-total-steps>{{ lessons.0.shortcuts|length }}</strong><span>Total</span></div>
+                    <div><strong data-remaining>{{ lessons.0.shortcuts|length }}</strong><span>Remaining</span></div>
+                </div>
+            </div>
+            <div class="progress-card">
+                <span>Overall course progress</span>
+                <h2><span data-course-progress>0</span>%</h2>
+                <div class="progress-bar large"><span data-course-bar style="width:0%"></span></div>
+                <p data-unlock-note>Lessons unlock sequentially as practice and quiz checks are completed.</p>
+            </div>
+            <div class="progress-card">
+                <span>Lesson metrics</span>
+                <div class="stat-list">
+                    <p><strong data-xp>0</strong><span>XP Earned</span></p>
+                    <p><strong data-eta>{{ lessons.0.duration }} min</strong><span>Est Time Left</span></p>
+                    <p><strong data-accuracy>0%</strong><span>Accuracy</span></p>
+                    <p><strong data-streak>0</strong><span>Streak</span></p>
+                    <p><strong data-lives style="color: var(--coral);">❤️❤️❤️</strong><span>Lives</span></p>
+                </div>
+            </div>
+        </aside>
+
+        <section class="trainer-app advanced" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 520px;">
+            <div>
+                <div class="trainer-header">
+                    <div>
+                        <span class="trainer-label" data-shortcut-label>Shortcut 1 of {{ lessons.0.shortcuts|length }}</span>
+                        <h3 data-action>Ready to train</h3>
+                        <p data-purpose>Click Start Lesson, then press the displayed shortcut.</p>
+                    </div>
+                    <span class="status-pill" data-status>Idle</span>
+                </div>
+
+                <div class="trainer-target" data-target style="margin-bottom: 20px;">
+                    <kbd>Start Lesson</kbd>
+                </div>
+
+                <!-- Interactive Virtual Keyboard Visualizer -->
+                <div class="keyboard-visualizer" id="keyboardVisualizer" aria-label="Visual keyboard representation">
+                    <div class="keyboard-row">
+                        <span class="key-cap" data-key="q">Q</span>
+                        <span class="key-cap" data-key="w">W</span>
+                        <span class="key-cap" data-key="e">E</span>
+                        <span class="key-cap" data-key="r">R</span>
+                        <span class="key-cap" data-key="t">T</span>
+                        <span class="key-cap" data-key="y">Y</span>
+                        <span class="key-cap" data-key="u">U</span>
+                        <span class="key-cap" data-key="i">I</span>
+                        <span class="key-cap" data-key="o">O</span>
+                        <span class="key-cap" data-key="p">P</span>
+                    </div>
+                    <div class="keyboard-row">
+                        <span class="key-cap" data-key="a">A</span>
+                        <span class="key-cap" data-key="s">S</span>
+                        <span class="key-cap" data-key="d">D</span>
+                        <span class="key-cap" data-key="f">F</span>
+                        <span class="key-cap" data-key="g">G</span>
+                        <span class="key-cap" data-key="h">H</span>
+                        <span class="key-cap" data-key="j">J</span>
+                        <span class="key-cap" data-key="k">K</span>
+                        <span class="key-cap" data-key="l">L</span>
+                    </div>
+                    <div class="keyboard-row">
+                        <span class="key-cap wide-2" data-key="shift">Shift</span>
+                        <span class="key-cap" data-key="z">Z</span>
+                        <span class="key-cap" data-key="x">X</span>
+                        <span class="key-cap" data-key="c">C</span>
+                        <span class="key-cap" data-key="v">V</span>
+                        <span class="key-cap" data-key="b">B</span>
+                        <span class="key-cap" data-key="n">N</span>
+                        <span class="key-cap" data-key="m">M</span>
+                        <span class="key-cap wide-2" data-key="enter">Enter</span>
+                    </div>
+                    <div class="keyboard-row">
+                        <span class="key-cap wide-2" data-key="control">Ctrl</span>
+                        <span class="key-cap wide-2" data-key="meta">Win</span>
+                        <span class="key-cap wide-2" data-key="alt">Alt</span>
+                        <span class="key-cap space-key" data-key="space">Spacebar</span>
+                    </div>
+                </div>
+
+                <p class="trainer-feedback" data-feedback>Your shortcut challenge will appear here.</p>
+            </div>
+
+            <div class="trainer-controls">
+                <button class="button primary" type="button" data-start>Start Lesson</button>
+                <button class="button secondary" type="button" data-skip disabled>Mark as weak</button>
+                <button class="button secondary" type="button" data-reset disabled>Reset</button>
+            </div>
+
+            <!-- Lesson Completion Overlay Screen -->
+            <div class="completion-panel" data-completion hidden>
+                <span class="trainer-label">Lesson Complete</span>
+                <h3>You finished the lesson!</h3>
+                <div class="completion-grid">
+                    <div><strong data-final-xp>0</strong><span>XP Earned</span></div>
+                    <div><strong data-final-accuracy>0%</strong><span>Accuracy</span></div>
+                    <div><strong data-final-speed>0s</strong><span>Average Speed</span></div>
+                    <div><strong data-final-time>0s</strong><span>Time Taken</span></div>
+                </div>
+                <p style="margin-top: 16px;"><strong>Weak Areas:</strong> <span data-weak-areas>None yet</span></p>
+                <div class="trainer-controls" style="margin-top: 18px;">
+                    <button class="button primary" type="button" data-start-quiz>Start Practical Quiz</button>
+                    <button class="button secondary" type="button" data-next-lesson>Next Lesson</button>
+                </div>
+            </div>
+
+            <!-- Practical Quiz Overlay Screen -->
+            <div class="completion-panel quiz-panel" data-quiz hidden>
+                <span class="trainer-label" data-quiz-label>Practical Quiz</span>
+                <h3 data-quiz-task>Copy selected text.</h3>
+                <p data-quiz-instruction style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Press the shortcut for the real task. The keys are hidden on purpose.</p>
+                <div class="quiz-target" data-quiz-target style="min-height: 100px; display: grid; place-items: center; border: 1px dashed var(--line); border-radius: var(--radius); background: var(--surface-muted); font-size: 20px; font-weight: 800; color: var(--muted); margin-bottom: 14px;">Task mode</div>
+                <p class="trainer-feedback" data-quiz-feedback>Start the quiz when you are ready.</p>
+                <div class="completion-grid" style="margin-top: 14px;">
+                    <div><strong data-quiz-score>0</strong><span>Score</span></div>
+                    <div><strong data-quiz-accuracy>0%</strong><span>Accuracy</span></div>
+                    <div><strong data-quiz-reaction>0s</strong><span>Reaction Time</span></div>
+                    <div><strong data-quiz-wrong>0</strong><span>Wrong Attempts</span></div>
+                </div>
+                <div class="trainer-controls" style="margin-top: 18px;">
+                    <button class="button secondary" type="button" data-retry-quiz>Retry Quiz</button>
+                    <button class="button primary" type="button" data-next-lesson-quiz>Next Lesson</button>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <section class="learning-path" style="margin-top: 40px;">
+        <div class="section-heading">
+            <p class="eyebrow">Learning Path</p>
+            <h2>Sequential lessons from foundation to application-specific speed.</h2>
+        </div>
+        <div class="path-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+            {% for lesson in lessons %}
+                <article class="path-card" style="border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 18px; box-shadow: var(--soft-shadow);">
+                    <span style="font-size: 12px; font-weight: 900; color: var(--primary); text-transform: uppercase;">Lesson {{ lesson.id }}</span>
+                    <h3 style="margin: 8px 0 4px 0;">{{ lesson.title }}</h3>
+                    <p style="font-size: 13px; color: var(--muted); margin: 0;">{{ lesson.category }} &middot; {{ lesson.difficulty }}</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}

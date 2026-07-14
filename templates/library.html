@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Shortcut Library | ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+    <section class="page-hero compact">
+        <div>
+            <p class="eyebrow">Shortcut Library</p>
+            <h1>Search shortcuts by app, category, and difficulty.</h1>
+            <p>Every card explains what the shortcut does, when to use it, a work example, and estimated time saved.</p>
+        </div>
+    </section>
+
+    <section class="library-tools" style="display: grid; grid-template-columns: minmax(200px, 2fr) repeat(4, 1fr) auto; gap: 12px; margin-bottom: 22px;">
+        <input type="search" data-library-search placeholder="Search copy, browser, Excel, multi cursor..." aria-label="Search shortcuts">
+        <select data-filter="app" aria-label="Filter by app"><option value="">All apps</option>{% for app in apps %}<option>{{ app }}</option>{% endfor %}</select>
+        <select data-filter="category" aria-label="Filter by category"><option value="">All categories</option>{% for category in categories %}<option>{{ category }}</option>{% endfor %}</select>
+        <select data-filter="difficulty" aria-label="Filter by difficulty"><option value="">All difficulties</option>{% for difficulty in difficulties %}<option>{{ difficulty }}</option>{% endfor %}</select>
+        <select data-library-sort aria-label="Sort by">
+            <option value="name">Sort by Name</option>
+            <option value="saved">Sort by Time Saved</option>
+            <option value="difficulty">Sort by Difficulty</option>
+        </select>
+        <button type="button" class="button secondary" data-filter-favorites style="min-height: 44px; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; gap: 6px; padding: 0 16px;">
+            <span style="color: var(--amber); font-size: 16px;">★</span> <span data-fav-text>Favorites</span>
+        </button>
+    </section>
+
+    <div id="library-empty" data-library-empty hidden style="text-align: center; padding: 40px; border: 1px dashed var(--line); border-radius: var(--radius); background: var(--surface); color: var(--muted); font-size: 18px; margin: 20px 0;">
+        No shortcuts found matching your criteria. Try adjusting your search filters.
+    </div>
+
+    <section class="shortcut-grid" data-library>
+        {% for shortcut in shortcuts %}
+            <article class="shortcut-library-card"
+                data-name="{{ shortcut.name|lower }}"
+                data-apps="{{ shortcut.apps|join:','|lower }}"
+                data-category="{{ shortcut.category|lower }}"
+                data-difficulty="{{ shortcut.difficulty|lower }}"
+                data-saved="{{ shortcut.saved }}">
+                <div class="card-topline">
+                    <span>{{ shortcut.category }}</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span>{{ shortcut.difficulty }}</span>
+                        <button class="favorite-btn" data-shortcut-id="{{ shortcut.name|slugify }}" aria-label="Toggle favorite" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); padding: 0; margin-top: -4px; transition: transform 0.15s ease;">☆</button>
+                    </div>
+                </div>
+                <h2>{{ shortcut.name }}</h2>
+                <div class="keys compact-keys">{% for key in shortcut.combo %}<kbd>{{ key }}</kbd>{% endfor %}</div>
+                <p><strong>Purpose:</strong> {{ shortcut.purpose }}</p>
+                <p><strong>When to use:</strong> {{ shortcut.when }}</p>
+                <p><strong>Example:</strong> {{ shortcut.example }}</p>
+                <p class="time-save">{{ shortcut.saved }} seconds saved per use</p>
+            </article>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}

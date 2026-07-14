@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Register | ShortcutMaster AI{% endblock %}
+
+{% block content %}
+<main class="auth-shell">
+    <section class="auth-panel">
+        <p class="eyebrow">Create account</p>
+        <h1>Start building daily keyboard speed.</h1>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <label>Username {{ form.username }}</label>
+            <label>Password {{ form.password1 }}</label>
+            <label>Confirm password {{ form.password2 }}</label>
+            <button class="button primary" type="submit">Register</button>
+        </form>
+        <div class="auth-links">
+            <a href="{% url 'login' %}">Already have an account?</a>
+        </div>
+    </section>
+    <aside class="auth-aside">
+        <span class="mini-label">Personalized practice</span>
+        <h2>Turn common work patterns into a shortcut curriculum.</h2>
+        <p>Track lessons, XP, streaks, weak areas, and estimated time saved.</p>
+    </aside>
+</main>
+{% endblock %}

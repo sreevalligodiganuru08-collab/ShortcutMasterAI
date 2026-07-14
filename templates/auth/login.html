@@ -1,37 +1,28 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Log In - ShortcutMaster AI{% endblock %}
+{% block title %}Login | ShortcutMaster AI{% endblock %}
 
 {% block content %}
-<div class="glass-panel auth-container">
-    <h2 class="auth-title">Log In to <span class="text-gradient-purple-blue">Your Account</span></h2>
-    
-    <form method="POST">
-        {% csrf_token %}
-        
-        <div class="form-group">
-            <label for="id_username">Username</label>
-            <input type="text" name="username" autofocus required id="id_username" class="form-input" placeholder="Enter username">
-            {% if form.username.errors %}
-                <div class="django-form-error">{{ form.username.errors.0 }}</div>
-            {% endif %}
+<main class="auth-shell">
+    <section class="auth-panel">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Login to continue your streak.</h1>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <label>Username {{ form.username }}</label>
+            <label>Password {{ form.password }}</label>
+            <button class="button primary" type="submit">Login</button>
+        </form>
+        <div class="auth-links">
+            <a href="{% url 'forgot_password' %}">Forgot password?</a>
+            <a href="{% url 'register' %}">Create account</a>
         </div>
-        
-        <div class="form-group">
-            <label for="id_password">Password</label>
-            <input type="password" name="password" required id="id_password" class="form-input" placeholder="••••••••">
-            {% if form.password.errors %}
-                <div class="django-form-error">{{ form.password.errors.0 }}</div>
-            {% endif %}
-        </div>
-        
-        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
-            <ion-icon name="log-in-outline"></ion-icon> Sign In
-        </button>
-    </form>
-    
-    <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary);">
-        Don't have an account? <a href="{% url 'signup' %}" class="text-gradient-purple-blue" style="font-weight: 600;">Sign up</a>
-    </p>
-</div>
+    </section>
+    <aside class="auth-aside">
+        <span class="mini-label">ShortcutMaster AI</span>
+        <h2>Pick up where your keyboard speed left off.</h2>
+        <p>Your dashboard, recommendations, and practice metrics are waiting.</p>
+    </aside>
+</main>
 {% endblock %}
